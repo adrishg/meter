@@ -229,11 +229,7 @@ class Parser:
         """
         matches = ''
         output = []
-        #if tkns[-1]!='b':
-        #    tkns.append('b')
         for rule_id,rule in enumerate(self.rules):
-            #pGrint rule['tokens']
-            #pdb.set_trace()
             try:
                 r_tkns = [] # array of all tokens to match (including rule's [prev_tokens]&[next_tokens]
                 if ('prev_tokens' in rule):
@@ -272,9 +268,7 @@ class Parser:
     
     def __init__(self, yaml_file='', data=None):
         
-        if data != None:
-            print "You got data, son."
-        elif yaml_file != '':
+        if yaml_file != '':
             data = load_yaml(yaml_file)
         else: 
             assert data is not None
@@ -290,8 +284,4 @@ if __name__ == '__main__':
     p = Parser('urdu-meter.yaml')
     import pprint
     pprint.pprint(p.rules)
-    print   p.tokenize(' dal-daaz')
-    #print_scan(s,knownOnly=False)
-    #scn = scan(" ko))sab paimaane be-.sarfah jab siim-o-zar miizaan")#be-;xvudii le ga))ii kahaa;n mujh ko")#der se inti:zaar hai apnaa")# faryaadii hai kis kii sho;xii-e ta;hriir kaa")
-    #print_scan(scn,knownOnly=False)
-
+    print p.tokenize(' dal-daaz')
