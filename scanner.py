@@ -59,11 +59,11 @@ class Scanner:
             pass
         return False
     
-    def scan(self, s, known_only=False, debug=False, parserDebug = False):
+    def scan(self, s, known_only=False, debug=False, parser_debug = False):
         pp = self.pp # Parser("urdu-meter.yaml")
         sp = self.sp # Parser('short.yaml')
         lp = self.lp # Parser('long.yaml')
-        sss = pp.parse(s, debug = parserDebug)    
+        sss = pp.parse(s, debug = parser_debug)    
         if debug:
             import pprint
             ppr = pprint.PrettyPrinter(indent=4)
@@ -74,11 +74,11 @@ class Scanner:
         tkns= lp.tokenize(sss) # now tokenize that--problem here w/ kyaa
         if debug:
             print tkns
-        matchResults = [{'matches':[], 'index':0}]
-        finalResults = []
+        match_results = [{'matches':[], 'index':0}]
+        final_results = []
 
-        while (len(matchResults)>0):
-            mr = matchResults.pop()
+        while (len(match_results)>0):
+            mr = match_results.pop()
             for p in (sp, lp):  # go through short and long parsers
                 newMatches = p.match_all_at(tkns, mr['index'])
                 if len(newMatches)==0: continue # move along if no matches
@@ -107,18 +107,17 @@ class Scanner:
                         if (known_only==True) and not (scan_line in self.meters_without_feet):
                             # in case meter is okay until now but not complete
                             continue
-                        finalResults.append(new_mr)
+                        final_results.append(new_mr)
                         continue
                     else:
-                        matchResults.append(new_mr)
+                        match_results.append(new_mr)
         if debug:
-            pprint.pprint(finalResults)
-        return ({'results':finalResults, 'orig_parse':self.pd, 'tkns':tkns})
-    def quick_results(self, scanResults):
-        finalResults = scanResults['results']
-   #     for i, r in enumerate(finalResults):
+            pprint.pprint(final_results)
+        return ({'results':final_results, 'orig_parse':self.pd, 'tkns':tkns})
+    def quick_results(self, scan_results):
+        final_results = scan_results['results']
         scan_lines=[]
-        for r in finalResults:
+        for r in final_results:
             scan_line = "( "
             for m in r['matches']:
                 scan_line += m['meter_string']+' '
@@ -127,14 +126,14 @@ class Scanner:
         return ' '.join(scan_lines)
 
            
-    def print_scan(self,scanResults, details=False, known_only = False,no_tkns = False, no_numbers=False, no_orig_tkns=False):
+    def print_scan(self,scan_results, details=False, known_only = False,no_tkns = False, no_numbers=False, no_orig_tkns=False):
         meters = self.meters_without_feet#load_yaml('gh-meters.yaml')
-        finalResults = scanResults['results']
-        finalResults = sorted(finalResults, key=lambda k: k['scan']) # sort by scan
-        pd = scanResults['orig_parse'] # parser detail of original scan (preserves original tokens)
-        tkns = scanResults['tkns'] # tokens of second-level parser
+        final_results = scan_results['results']
+        final_results = sorted(final_results, key=lambda k: k['scan']) # sort by scan
+        pd = scan_results['orig_parse'] # parser detail of original scan (preserves original tokens)
+        tkns = scan_results['tkns'] # tokens of second-level parser
         #pdb.set_trace()
-        for i, r in enumerate(finalResults):
+        for i, r in enumerate(final_results):
             if known_only and (not (r['scan'] in meters)):
                 continue
             if no_numbers==False: print 'result #'+str(i)#+ i#" "+meter_string
