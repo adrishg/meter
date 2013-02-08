@@ -1,6 +1,8 @@
-from myparser import Parser
+from parser import Parser
 import re
 import pdb
+
+debug=False
 
 def load_yaml(filename):
     """
@@ -10,31 +12,26 @@ def load_yaml(filename):
     stream = file(filename)
     return yaml.load(stream)
 
-# <codecell>
-
-# may not want it sorted
-# it's not necessarily tied to yaml, but might loose that format.
-
-debug=False
-
 class Scanner: 
-    def __init__(self, meter_file = 'urdu-meter.yaml', 
-                       short_file='short.yaml', 
-                       long_file='long.yaml', 
-                       gh_meters_file = 'gh-meters.yaml',
-                       gh_reference_file='gh-reference.yaml'):
+    """
+    Handles metrically scansion.
+    """
+    def __init__(self, meter_file = 'settings/urdu-meter.yaml', #terrible name for this
+                       short_file='settings/short.yaml', 
+                       long_file='settings/long.yaml', 
+                       meters_file = 'settings/gh-meters.yaml',
+                       meter_description_file='settings/gh-reference.yaml'):
         self.pp = Parser(meter_file)
         self.sp = Parser(short_file)
         self.lp = Parser(long_file)
-        self.gh_meters_with_feet = load_yaml(gh_meters_file)
-        self.gh_meters_without_feet = {}#load_yaml(gh_meters_file)
-        #print self.gh_meters_with_feet
-        for i,v in self.gh_meters_with_feet.iteritems():
+        self.meters_with_feet = load_yaml(meters_file)
+        self.meters_without_feet = {}#load_yaml(gh_meters_file)
+        for i,v in self.meters_with_feet.iteritems():
             new_i = i.replace('/','')
-            self.gh_meters_without_feet[new_i] = i # say a list for later
-        self.ok_meters_re = '|'.join(self.gh_meters_without_feet)
-        self.gh_reference = load_yaml(gh_reference_file)
-        #print self.ok_meters_re
+            self.meters_without_feet[new_i] = i # save a list for later
+        self.ok_meters_re = '|'.join(self.meters_without_feet)
+        self.meter_descriptions = load_yaml(meter_description_file)
+
     def meter_ok(self, so_far):
         return re.search('(?:^|\|)'+so_far, self.ok_meters_re)
 
@@ -62,19 +59,11 @@ class Scanner:
             pass
         return False
     
-#&illegalComboArray(<<END_ILLEGAL
-# 603 b c s c , v
-# 604 c s c , v
-# 605 c , v
-# 606 c , z
-# 607 b c s , c
-# 608 c s , c
-
-    def scan(self, s, knownOnly=False, debug=False, parserDebug = False):
-        pp = self.pp#Parser("urdu-meter.yaml")
-        sp = self.sp#Parser('short.yaml')
-        lp = self.lp#Parser('long.yaml')
-        sss = pp.parse(s, debug = parserDebug)    #'naqsh faryaadii hai kis kii sho;xii-e ta;hriir kaa')
+    def scan(self, s, known_only=False, debug=False, parserDebug = False):
+        pp = self.pp # Parser("urdu-meter.yaml")
+        sp = self.sp # Parser('short.yaml')
+        lp = self.lp # Parser('long.yaml')
+        sss = pp.parse(s, debug = parserDebug)    
         if debug:
             import pprint
             ppr = pprint.PrettyPrinter(indent=4)
@@ -111,11 +100,11 @@ class Scanner:
                     for m in new_matches:
                             scan_line +=m['meter_string']
                     new_mr['scan'] = scan_line
-                    if (knownOnly==True) and not (self.meter_ok(scan_line)):
+                    if (known_only==True) and not (self.meter_ok(scan_line)):
                         #print "Bad meter: "+scan_line
                         continue
                     if new_index==len(tkns) or (new_index+1==len(tkns) and tkns[-1]=='b'):
-                        if (knownOnly==True) and not (scan_line in self.gh_meters_without_feet):
+                        if (known_only==True) and not (scan_line in self.meters_without_feet):
                             # in case meter is okay until now but not complete
                             continue
                         finalResults.append(new_mr)
@@ -138,22 +127,22 @@ class Scanner:
         return ' '.join(scan_lines)
 
            
-    def print_scan(self,scanResults, details=False, knownOnly = False,no_tkns = False, no_numbers=False, no_orig_tkns=False):
-        gh_meters = self.gh_meters_without_feet#load_yaml('gh-meters.yaml')
+    def print_scan(self,scanResults, details=False, known_only = False,no_tkns = False, no_numbers=False, no_orig_tkns=False):
+        meters = self.meters_without_feet#load_yaml('gh-meters.yaml')
         finalResults = scanResults['results']
         finalResults = sorted(finalResults, key=lambda k: k['scan']) # sort by scan
         pd = scanResults['orig_parse'] # parser detail of original scan (preserves original tokens)
         tkns = scanResults['tkns'] # tokens of second-level parser
         #pdb.set_trace()
         for i, r in enumerate(finalResults):
-            if knownOnly and (not (r['scan'] in gh_meters)):
+            if known_only and (not (r['scan'] in meters)):
                 continue
             if no_numbers==False: print 'result #'+str(i)#+ i#" "+meter_string
-            if (r['scan'] in gh_meters):
-                gh_with_feet = self.gh_meters_without_feet[r['scan']]
-                gh_id = self.gh_meters_with_feet[gh_with_feet]
-                gh_string = self.gh_reference[gh_id]# = load_yaml('gh-reference.yaml')
-                print 'matches '+gh_string+' <'+gh_id+'> as '+gh_with_feet#gh_meters[r['scan']]+gh_reference[
+            if (r['scan'] in meters):
+                meter_with_feet = self.meters_without_feet[r['scan']]
+                meter_id = self.meters_with_feet[meter_with_feet]
+                meter_description = self.meter_descriptions[meter_id]
+                print 'matches '+meter_description+' <'+meter_id+'> as '+meter_with_feet
             scan_line = ''
             tkn_line  = ''
             orig_tkn_line = ''
@@ -170,7 +159,8 @@ class Scanner:
                 print tkn_line
             if no_orig_tkns == False:
                 print orig_tkn_line
- 
+    
+
 
 '''
 G1: =-==/=-==/=-==/=-=(-)
@@ -203,12 +193,11 @@ if __name__ == '__main__':
     #          == -  /=  -   =  -/-=  = -/=-=(-)
     _ = " ;gara.z shast-e but-e naavuk-figan kii aazmaa))ish hai"
     pdb.set_trace()
-    scn = s.scan(_, knownOnly=False, debug=True)
+    scn = s.scan(_, known_only=False, debug=True)
     pd = s.pd
     print s.print_scan(scn)
     print "****"
-    print s.print_scan(scn, knownOnly=True)
-    die()
+    print s.print_scan(scn, known_only=True)
    # _ = " ko))ii"
     #_ = " dar pardah unhe;n ;gair se hai rab:t-e nihaanii" #bol kih lab aazaad hai tere"#ham ne dil khol ke daryaa ko bhii saa;hil baa;ndhaa"#vaa;n pahu;nch kar jo ;gash aataa pa))e-ham hai ham ko"
     #_ = " kamaal-e garmii-e sa((ii-e talaash-e diid nah puuchh"
@@ -229,11 +218,11 @@ if __name__ == '__main__':
         verse =  m.group(2)
         #print "********************* "+_
         meter =  m.group(3)
-        scn = s.scan(verse,debug=False,knownOnly=True)
+        scn = s.scan(verse,debug=False,known_only=True)
         if not s['results']:
             print "NOO!!!!!"
             print verse
-            scn = s.scan(verse,knownOnly=False)
+            scn = s.scan(verse,known_only=False)
             pd = s.pd
             print s.print_scan(scn)#scn)#.print_scan(scn, knownOnly=False)
         else:
