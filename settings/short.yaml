@@ -1,0 +1,99 @@
+rules:
+  <b> c s (b al): s_csbal
+  (<b> c v) c c <b>: s_(<b>cv)cc<b>
+  <b> c c <b>: s_(b)ccc(b)
+  <c> c c <b>: s_(c)cc(b)
+  <o> s: s_(o)s
+  (al) s: s_(al)s
+  <v> c c <b>: s_(v)cc(b)
+  b c <b>: s_bc(b)
+  b c s: s_bcs
+  b c s c<h+wb>: s_bcsc<h+wb>
+  b c s n: s_bcsn
+  c s n: s_csn # is this a problem? Need more constraints?
+  b c v_duii: s_bcv_duii # flexible vao in du))ii
+  b c v <b>: s_bcv(b)
+  b c v <o>: s_bcv(o)
+  b c v <z>: s_bcv(z)
+  b c v n <b>: s_bcvn(b)
+  b c<;xv> s: s_bc<;xv>s
+  b ko_ii: s_bkoii
+  b o: s_bo
+  b s: s_bs
+  b s n: s_bsn
+  b tum: s_tum
+  b v<aur>: s_bv<aur>
+  c: s_c
+  c b o: s_cbo
+  c b s: s_cbs
+  c o: s_co
+  c s: s_cs
+  c s c<h+wb>: s_csc<h+wb>
+  c v <b>: s_cv(b)
+  c v <z>: s_cv(z)
+  c v n <b>: s_cvn(b)
+  c v<ii+o>: s_cv<ii+o>
+  c v<ii+z>: s_cv<ii+z>
+  c v<aa+z>: s_cv<aa+z>
+  b c v<ii+o>: s_cv<ii+o>
+  b c v<ii+z>: s_cv<ii+z>
+  b c v<aa+z>: s_cv<aa+z>
+  c v_e_fut: s_cv_e_fut
+  c v_e_fut n: s_cv_e_futn
+  c v_o_fut: s_cv_o_fut
+  b c v_o_fut: s_cv_o_fut
+  c z: s_cz
+  c<;xv> s: s_c<;xv>s
+  c<h+wb>: s_c<h+wb>
+  c<h+wb> o: s_c<h+wb>
+  o: s_o
+  v <b>: s_v(b)
+  v<ii+z> z: s_v<ii+z>
+  z: s_z
+tokens:
+  <h+wb>: 
+  - tkn
+  b: 
+  - tkn
+  - b
+  c: 
+  - tkn
+  - c
+  c<;xv>:
+  - tkn
+  c<h+wb>: 
+  - tkn
+  ko_ii: 
+  - tkn
+  n: 
+  - tkn
+  o: 
+  - tkn
+  - o
+  s: 
+  - tkn
+  tum:
+  - tkn
+  v: 
+  - tkn
+  v<aur>: 
+  - tkn
+  v<ii+o>: 
+  - tkn
+  v<ii+z>: 
+  - tkn
+  v_e_fut: 
+  - tkn
+  v_o_fut: 
+  - tkn
+  kyaa:
+  - tkn
+  z: 
+  - tkn
+  - z
+  al:
+  - tkn
+  v_duii:
+  - tkn
+  pahun:
+  - tkn

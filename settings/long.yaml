@@ -1,0 +1,94 @@
+rules:
+  b pahun: l_bpahun
+  b c v b al: l_bcvbal
+  c v b al: l_cvbal
+  c<h+wb> b al: l_c<h+wb>bal
+  (b al) c v c<h+wb>: l_(bal)cvc<h+wb>
+  c b al: l_cbal
+  b al: l_bal
+  (o) s c: l_bsc
+  b c s c: l_csc
+  b c s c<h+wb>: l_csc
+  b c s n c: l_bcsnc
+  b c s n c<h+wb>: l_csnc
+  b c v: l_bcv
+  b c v_duii: l_bcv_duii
+#  b c v c (b): l_dost_2
+#  b c v c (cb): l_dost_2
+#  b c v c c (b): l_dost
+  b c v n: l_bcv
+  b c v<aa+z>: l_cv<aa+z>
+  b c v_e_fut: l_cvefut
+  b c v_e_fut n: l_cvefutn
+  b c<;xv> s c: l_cxsc
+  b c<;xv> v: l_cxv
+  b c<;xv> v n: l_cxvn
+#  b c_ky v: l_ckyv
+#  b c_ky v n: l_ckyvn
+  b ko_ii: l_cv
+  b kyaa: l_kyaa
+  b o: l_o
+  b s c: l_bsc
+  b s c n: l_bscn
+  b s c<h+wb>: l_bsc
+  b s n c: l_bsnc
+  b v: l_bv
+  b v n: l_bv
+  b v<aur>: l_bv
+  b v<aur> c: l_aur
+  c b s c: l_cbsc
+  c b v: l_cbv
+  c b v n: l_cbvn
+  c b v<aur>: l_cbv
+  c b v<aur> c: l_caur
+  c o: l_co
+  c s c: l_csc
+  c s c<h+wb>: l_csc
+  c s n c: l_csnc
+  c v: l_cv
+  c v n: l_cv
+  c v<aa+z>: l_cv<aa+z>
+  c v<ii+o>: l_c_ii_o
+  c v<ii+z>: l_cv<ii+z>
+  v<ii+z> z: l_v<ii+z>z
+  b c c v: l_bccv
+  b c c v n: l_bccvn 
+  b c v<aa+z>: l_cv<aa+z>
+  b c v<ii+o>: l_c_ii_o
+  b c v<ii+z>: l_cv<ii+z>
+  c v_e_fut n: l_cvefutn
+  c v_o_fut: l_cvofut
+  b c v_o_fut: l_cvofut  #eg hogii
+  c v_e_fut: l_cvefut
+  c z: l_cz
+  c<;xv> s c: l_cxsc
+  c<;xv> v: l_cxv
+  c<h+wb> o: l_co
+  ko_ii: l_cv
+  o: l_o
+  v: l_v
+  v<ii+o> (o): l_ii_o
+  z: l_z
+tokens:
+  b: tkn
+  c: tkn
+  c<;xv>: tkn
+  c<h+wb>: tkn
+  c_ky: tkn
+  ko_ii: tkn
+  kyaa: tkn
+  n: tkn
+  o: tkn
+  s: tkn
+  v: tkn
+  v<aa+z>: tkn
+  v<aur>: tkn
+  v<ii+o>: tkn
+  v<ii+z>: tkn
+  v_e_fut: tkn
+  v_o_fut: tkn
+  z: tkn
+  tum: tkn
+  al: tkn
+  v_duii: tkn
+  pahun: tkn

@@ -1,0 +1,276 @@
+# This is a YAML filethat  contains the rules for generating the categorized strings, as well as the tokens with their classes.
+# So, ((ishq when parsed would be rendered "cscc" as its tokens are [((,i,sh,q] 
+
+rules:
+# Syntax for rules: (<prev class>+ tokens+)|<prev class>)? tokens+ (<next_class>|(tokens+ <next_class>)?
+# 
+  ' ': b
+  (<wb> d) uu ()) ii <wb>): v_duii # exception here--may move to word list or change to du))ii
+  '!': b
+  '''': ''
+  ''' (h aa <izaafat>)': b
+  ''' (h aa <wb>)': b
+  (: b
+  ((: c
+  '<wb> p a h u ;n (ch <vowel>)': pahun # this is for Ghalib--don't know if it is always the case.
+  '<wb> a l -': al
+  '<wb> u l -': al
+  '<wb> i l -': al #treat as same
+  (-e): hz
+  ): b
+  )): c
+  ',': b
+  '-': b
+  --: b
+  '----': b
+  -e: z
+  -o-: o
+  .s: c
+  .z: c
+  ':': b
+  :n: c
+  :t: c
+  :z: c
+  ;: b
+  ;aa: v
+  ;d: c
+  ;dh: c
+  ;g: c
+  ;h: c
+  ;n: n
+  ;r: c
+  ;rh: c
+  ;s: c
+  ;t: c
+  ;th: c
+  <wb> ;x v: c<;xv> #needs a break in front of it?
+  <consonant> ;x v <vowel>: c<;xv> 
+  ;x: c
+  ;z: c
+  <wb> au (r <wb>): v<aur>
+#  <wb> k y <vowel>: c_ky
+  <wb> k y aa <wb>: kyaa
+  <wb> t u m (h): tum
+  '?': b
+  '[': b
+  ']': b
+  a: s
+  aa: v
+  aa <izaafat>: v<aa+z>
+  ai: v
+  au: v
+  b: c
+  bh: c
+  ch: c
+  chh: c
+  d: c
+  dh: c
+  e: v
+  e (;n g e <wb>): v_e_fut
+  e (;n g ii <wb>): v_e_fut
+  e (g aa <wb>): v_e_fut
+  e (g ii <wb>): v_e_fut
+  f: c
+  g: c
+  gh: c
+  h: c
+  h (' h aa <izaafat>): c<h+wb>
+  h (' h aa <wb>): c<h+wb>
+  h <wb>: c<h+wb>
+  i: s
+  ii: v
+  ii <izaafat>: v<ii+z>
+  ii <persian_o>: v<ii+o>
+  j: c
+  jh: c
+  k: c
+  kh: c
+  <wb> k o ()) ii <wb>): ko_ii
+  l: c
+  m: c
+  n: c
+  o: v
+  o (g ii <wb>): v_o_fut
+  o (g e <wb>): v_o_fut
+  p: c
+  ph: c
+  q: c
+  r: c
+  s: c
+  sh: c
+  t: c
+  th: c
+  u: s
+  uu: v
+  v: c
+  y: c
+  z: c
+  zh: c
+tokens:
+  ' ':
+  - wb
+  '!':
+  - wb
+  - punctuation
+  '''':
+  - letter_break
+  (:
+  - wb
+  - punctuation
+  ((:
+  - consonant
+  (-e):
+  - hidden_izaafat
+  ):
+  - wb
+  - punctuation
+  )):
+  - consonant
+  ',':
+  - wb
+  - punctuation
+  '-':
+  - wb
+  --:
+  - wb
+  - punctuation
+  '----':
+  - wb
+  - punctuation
+  -e:
+  - izaafat
+  -o-:
+  - wb
+  - persian_o
+  .s:
+  - consonant
+  .z:
+  - consonant
+  ':':
+  - wb
+  - punctuation
+  :n:
+  - consonant
+  :t:
+  - consonant
+  :z:
+  - consonant
+  ;:
+  - wb
+  - punctuation
+  ;aa:
+  - vowel
+  ;d:
+  - consonant
+  ;dh:
+  - consonant
+  ;g:
+  - consonant
+  ;h:
+  - consonant
+  ;n:
+  - consonant
+  ;r:
+  - consonant
+  ;rh:
+  - consonant
+  ;s:
+  - consonant
+  ;t:
+  - consonant
+  ;th:
+  - consonant
+  ;x:
+  - consonant
+  ;z:
+  - consonant
+  '?':
+  - wb
+  - punctuation
+  '[':
+  - wb
+  - punctuation
+  ']':
+  - wb
+  - punctuation
+  a:
+  - short_vowel
+  - short_vowel_a
+  aa:
+  - vowel
+  - vowel_aa
+  ai:
+  - vowel
+  au:
+  - vowel
+  b:
+  - consonant
+  bh:
+  - consonant
+  ch:
+  - consonant
+  chh:
+  - consonant
+  d:
+  - consonant
+  dh:
+  - consonant
+  e:
+  - vowel
+  f:
+  - consonant
+  g:
+  - consonant
+  gh:
+  - consonant
+  h:
+  - consonant
+  - consonant_h
+  i:
+  - short_vowel
+  ii:
+  - vowel
+  j:
+  - consonant
+  jh:
+  - consonant
+  k:
+  - consonant
+  kh:
+  - consonant
+  l:
+  - consonant
+  m:
+  - consonant
+  n:
+  - consonant
+  o:
+  - vowel
+  p:
+  - consonant
+  ph:
+  - consonant
+  q:
+  - consonant
+  r:
+  - consonant
+  s:
+  - consonant
+  sh:
+  - consonant
+  t:
+  - consonant
+  th:
+  - consonant
+  u:
+  - short_vowel
+  uu:
+  - vowel
+  v:
+  - consonant
+  y:
+  - consonant
+  z:
+  - consonant
+  zh:
+  - consonant
