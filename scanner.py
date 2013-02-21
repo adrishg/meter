@@ -1,7 +1,7 @@
 from parser import Parser
 import re
 import pdb
-
+import csv
 debug=False
 
 def load_yaml(filename):
@@ -16,10 +16,12 @@ class Scanner:
     """
     Handles metrically scansion.
     """
+
     def __init__(self, meter_file = 'settings/urdu-meter.yaml', #terrible name for this
                        short_file='settings/short.yaml', 
                        long_file='settings/long.yaml', 
                        meters_file = 'settings/gh-meters.yaml',
+                       bad_combos_file = 'settings/bad_combos.csv', # csv for this one
                        meter_description_file='settings/gh-reference.yaml'):
         self.pp = Parser(meter_file)
         self.sp = Parser(short_file)
@@ -31,35 +33,51 @@ class Scanner:
             self.meters_without_feet[new_i] = i # save a list for later
         self.ok_meters_re = '|'.join(self.meters_without_feet)
         self.meter_descriptions = load_yaml(meter_description_file)
+        self.bad_combos = []
+        with open(bad_combos_file, 'rb') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',', quotechar="'")
+            for row in reader:
+                assert len(row) == 2
+                self.bad_combos.append(row)
 
     def meter_ok(self, so_far):
         return re.search('(?:^|\|)'+so_far, self.ok_meters_re)
 
     def bad_combo(self,prev_matches, this_match):
+        '''
+        Makes sure illegal metrical combinations are removed.
+        '''
         try:
             prev_match = prev_matches[-1]
-            for (p_m,t_m) in [('s_bcsc','l_v'), #need expand these
-                              ('l_csc','l_v'), 
-                              ('l_bsc','s_v(b)'),
-                              ('l_bsc', 'l_v'),
-                              ('s_c', 'l_v'),
-                              ('s_c', 'l_v<ii+z>'),
-                              ('s_c', 'l_z'),
-                              ('s_c', 's_v(b)'),
-                              ('s_c', 's_c<h+wb>'),##c s       c<h+wb>
-                              ('s_bcs', 's_c'),#b c s     c<h+wb> 
-                              ('s_bcs', 's_c<h+wb>'),
-                              ('s_cs',  's_c<h+wb>'),
-                              ('s_bs', 's_c'), 
-                              ('s_cs', 's_c')]:
-
+            for (p_m,t_m) in self.bad_combos:
                 if prev_match['rule']['production']==p_m and this_match['rule']['production']==t_m: 
                     return True
         except IndexError:
             pass
         return False
     
-    def scan(self, s, known_only=False, debug=False, parser_debug = False):
+    def scan(self, s, known_only=True, debug=False, parser_debug = False):
+        """
+        Scans an input string(s), ignoring unacceptable combinations if known_only set
+
+        Returns a dictionary with ['results', 'tkns', 'orig_parse']
+
+        results, a dictionary,  hold the details
+            matches: list of dictionaries holding the match details
+                tokens: tokens matching long or short (e.g. c,s,c)
+                start: the index in the processed string
+                rule_id: index for the rule (* needs to account for source)
+                rule: copy of the rule (* don't need to copy with rule_id passed)
+                meter_string: production of match (e.g. = or -)
+            index: the last match (ignore, but used in scanning)
+            meter_string: the last meter string (ignore, but used in scanning)
+            scan: the cumulative meter string (e.g. =-===-===-===-=)
+        
+        tkns the tokens of the original input string (s)
+        orig_parse hold the production of the tkns (used by the scanner)
+
+
+        """
         pp = self.pp # Parser("urdu-meter.yaml")
         sp = self.sp # Parser('short.yaml')
         lp = self.lp # Parser('long.yaml')
@@ -114,7 +132,11 @@ class Scanner:
         if debug:
             pprint.pprint(final_results)
         return ({'results':final_results, 'orig_parse':self.pd, 'tkns':tkns})
+    
     def quick_results(self, scan_results):
+        """
+        print quick results
+        """
         final_results = scan_results['results']
         scan_lines=[]
         for r in final_results:
@@ -125,16 +147,68 @@ class Scanner:
             scan_lines.append(scan_line)
         return ' '.join(scan_lines)
 
-           
-    def print_scan(self,scan_results, details=False, known_only = False,no_tkns = False, no_numbers=False, no_orig_tkns=False):
+    def id_meter(self,scan_string):
+        '''
+        takes a scan string without feet, returns id, e.g. G1
+        '''
+        meter_with_feet = self.meters_without_feet[scan_string]
+        meter_id = self.meters_with_feet[meter_with_feet]
+        #meter_description = self.meter_descriptions[meter_id]
+        return meter_id
+
+    def describe_meter(self,scan_string):
+        '''
+        takes a scan string without feet, returns meter string with feet and variations
+        '''
+        meter_with_feet = self.meters_without_feet[scan_string]
+        meter_id = self.meters_with_feet[meter_with_feet]
+        meter_description = self.meter_descriptions[meter_id]
+        return meter_description
+
+    # todo: copy this into print_scan 
+    def print_scan_result(self,r, orig_parse, details=False, known_only = False, no_description=False,
+                          no_tkns = False, no_numbers=False, no_orig_tkns=False, no_match_production=False):
+        '''
+        takes a single scan result (r) and the orginal parse (of the tokens) as input
+        '''
+        scan_line = ''
+        tkn_line  = ''
+        orig_tkn_line = ''
+        match_production_line = '' # eg l_bcsc
+        if no_description == False:
+            if (r['scan'] in self.meters_without_feet):
+                meter_with_feet = self.meters_without_feet[r['scan']]
+                meter_id = self.meters_with_feet[meter_with_feet]
+                meter_description = self.meter_descriptions[meter_id]
+                print 'matches '+meter_description+' <'+meter_id+'> as '+meter_with_feet
+
+        for m in r['matches']:
+            scan_line += m['meter_string'].ljust(10)
+            tkn_line += ' '.join(m['tokens']).ljust(10)
+            orig_tkns = ''
+            for t in orig_parse[m['start']:(m['start']+len(m['tokens']))]:
+                orig_tkns += ' '.join(t['tokens'])
+            orig_tkn_line += orig_tkns.ljust(10)
+
+            match_production_line +=m['rule']['production'].ljust(10)
+            m
+        print scan_line
+        if no_tkns == False:
+            print tkn_line
+        if no_orig_tkns == False:
+            print orig_tkn_line
+        if no_match_production == False:
+            print match_production_line
+    def print_scan(self,scan_results, details=False, no_tkns = False, no_numbers=False, no_orig_tkns=False,known_only=False,
+                   no_match_production = True):
         meters = self.meters_without_feet#load_yaml('gh-meters.yaml')
         final_results = scan_results['results']
         final_results = sorted(final_results, key=lambda k: k['scan']) # sort by scan
-        pd = scan_results['orig_parse'] # parser detail of original scan (preserves original tokens)
+        _orig_parse = scan_results['orig_parse'] # parser detail of original scan (preserves original tokens)
         tkns = scan_results['tkns'] # tokens of second-level parser
         #pdb.set_trace()
         for i, r in enumerate(final_results):
-            if known_only and (not (r['scan'] in meters)):
+            if known_only and (not (r['scan'] in meters)): # allows override
                 continue
             if no_numbers==False: print 'result #'+str(i)#+ i#" "+meter_string
             if (r['scan'] in meters):
@@ -150,7 +224,7 @@ class Scanner:
                 scan_line += m['meter_string'].ljust(10)
                 tkn_line += ' '.join(m['tokens']).ljust(10)
                 orig_tkns = ''
-                for t in pd[m['start']:(m['start']+len(m['tokens']))]:
+                for t in _orig_parse[m['start']:(m['start']+len(m['tokens']))]:
                   orig_tkns += ' '.join(t['tokens'])
                 orig_tkn_line += orig_tkns.ljust(10)
             print scan_line
@@ -160,69 +234,19 @@ class Scanner:
                 print orig_tkn_line
     
 
-
-'''
-G1: =-==/=-==/=-==/=-=(-)
-G10: ==-/=-==(-)//==-/=-==(-)
-G11: '[-|=]-==/--==/[--|=]=(-)'
-G12: -==/-==/-==/-==(-)
-G13: ==-/-==-/-==-/`-==(-)
-G14: =-==/=-==/=-=(-)
-G15: =--=/-=-=(-)//=--=/-=-=(-)
-G16: -=-=/--==/-=-=/--==(-)
-G17: =--=/=-=-/=--=/=(-)
-G18: ==-/-===(-)//==-/-===(-)
-G19: '==[=/|-/-]=-=/-==(-)'
-G2: -===/-===/-===/-===(-)
-G3: ==-/=-=-/-==-/=-=(-)
-G4: =-=/-===(-)/=-=/-===(-)
-G5: '[-|=]-==/--==/--==/[--|=]=(-)'
-G6: --=-/=-==/--=-/=-==(-)
-G7: -===/-===/-==(-)
-G8: '[=|-]-==/-=-=/[--|=]=(-)'
-G9: '-=-=/--==/-=-=/[--|=]=(-)'
-'''
-
 if __name__ == '__main__':
     s = Scanner()
     _ = " ;xvush uuftaadagii kih bah .sa;hraa-e inti:zaar"
-    _ = " dil-e har qa:trah hai saaz-e anaa al-ba;hr"#-e .sadaa paayaa"#dekhiye laatii hai us sho;x kii na;xvat kyaa rang"# le ga))ii saaqii kii na;xvat qulzum-aashaamii mirii"# ;husn aur us pah ;husn-e :zann rah ga))ii buu al-havas kii sharm"
-    _ = " dekhiye laatii hai us sho;x kii na;xvat kyaa rang"#vaa;n vuh farq-e naaz ma;hv-e baalish-e kam;xvaab thaa"#lab pardah-sanj-e zamzamah-e al-amaa;n nahii;n"
-    #      =   =  -   =  -   =  - = -  =  - = - =
-    #          == -  /=  -   =  -/-=  = -/=-=(-)
     _ = " ;gara.z shast-e but-e naavuk-figan kii aazmaa))ish hai"
+    _ = "naqsh faryaadii hai kis kii sho;xii-e ta;hriir kaa"
     pdb.set_trace()
-    scn = s.scan(_, known_only=False, debug=True)
+    scn = s.scan(_, known_only=True, debug=True)
+
     pd = s.pd
     print s.print_scan(scn)
-    print "****"
+    print s.print_scan_result(scn['results'][0], scn['orig_parse'])
+    print s.meter_descriptions
+
+    #print "****"
     print s.print_scan(scn, known_only=True)
-   # _ = " ko))ii"
-    #_ = " dar pardah unhe;n ;gair se hai rab:t-e nihaanii" #bol kih lab aazaad hai tere"#ham ne dil khol ke daryaa ko bhii saa;hil baa;ndhaa"#vaa;n pahu;nch kar jo ;gash aataa pa))e-ham hai ham ko"
-    #_ = " kamaal-e garmii-e sa((ii-e talaash-e diid nah puuchh"
-    #_ = " aashiyaanah"
-    #_ = _.lower()
-    #scn = s.scan(_,knownOnly=False, debug=True)
-    #pd = s.pd
-    #print s.quick_results(scn)#print_scan(scn)
-
-    #die
-    lines = tuple(open('bad-gh.txt', 'r'))
-
-    mylines = [lines[0]]
-    for _ in lines:
-        _ = _.strip()
-        m = re.match('(.+?)\s+(.+?)\s+([G]\d+)$', _)
-        id = m.group(1)
-        verse =  m.group(2)
-        #print "********************* "+_
-        meter =  m.group(3)
-        scn = s.scan(verse,debug=False,known_only=True)
-        if not s['results']:
-            print "NOO!!!!!"
-            print verse
-            scn = s.scan(verse,known_only=False)
-            pd = s.pd
-            print s.print_scan(scn)#scn)#.print_scan(scn, knownOnly=False)
-        else:
-            print "YES! "+verse
+    

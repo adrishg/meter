@@ -1,1 +1,9 @@
-Hello!
+Instructions are in Introduction.ipynb ipython notebook (just run ipython notebook in this directory).
+
+There are two python files, parser.py and scanner.py
+
+settings are in ./settings
+data is in ./data/verses.csv
+debugging utilities in ./utilities
+
+Last updated 2/10/12
