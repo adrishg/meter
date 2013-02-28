@@ -187,7 +187,7 @@ class Scanner:
             tkn_line += ' '.join(m['tokens']).ljust(10)
             orig_tkns = ''
             for t in orig_parse[m['start']:(m['start']+len(m['tokens']))]:
-                orig_tkns += ' '.join(t['tokens'])
+                orig_tkns += ''.join(t['tokens'])
             orig_tkn_line += orig_tkns.ljust(10)
 
             match_production_line +=m['rule']['production'].ljust(10)
