@@ -184,7 +184,7 @@ class Scanner:
 
         for m in r['matches']:
             scan_line += m['meter_string'].ljust(10)
-            tkn_line += ' '.join(m['tokens']).ljust(10)
+            tkn_line += ''.join(m['tokens']).ljust(10)
             orig_tkns = ''
             for t in orig_parse[m['start']:(m['start']+len(m['tokens']))]:
                 orig_tkns += ''.join(t['tokens'])
@@ -222,10 +222,10 @@ class Scanner:
             
             for m in r['matches']:
                 scan_line += m['meter_string'].ljust(10)
-                tkn_line += ' '.join(m['tokens']).ljust(10)
+                tkn_line += ''.join(m['tokens']).ljust(10)
                 orig_tkns = ''
                 for t in _orig_parse[m['start']:(m['start']+len(m['tokens']))]:
-                  orig_tkns += ' '.join(t['tokens'])
+                  orig_tkns += ''.join(t['tokens'])
                 orig_tkn_line += orig_tkns.ljust(10)
             print scan_line
             if no_tkns == False:
