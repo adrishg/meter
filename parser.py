@@ -75,18 +75,6 @@ def rules_from_yaml_data(rules_raw):
     for key in rules_raw:
         if debug: print "key is "+key+" = "+rules_raw[key]
         rule = {}           #1       #2        #3
-
-#        if debug: print "trying "+key+" in rules_from_yaml_data()"
-        """
-        m = re.match(r'(?:<(.+?)> )?(.+?)(?: <(.+?)>)?$', key,re.S)
-
-        if m.group(1): rule['prev']   = m.group(1)
-        rule['tokens'] = m.group(2).split(' ')
-        if m.group(2)==' ':
-            rule['tokens'] = [' '] # override for space ' '
-        if m.group(3): rule['next']   = m.group(3)
-        rule['production'] = unescape_unicode_charnames(rules_raw[key])
-        """
         _  ='(?:'   
         _ +='\('
         _ +='(?:\s?<(.+?)> )?' # group 1, prev class (in brackets indicating cluster)
