@@ -117,6 +117,20 @@ class Parser:
     error_on_last = False
     last_string = ''
     error_string = ''
+
+    def __init__(self, yaml_file='', data=None):
+        
+        if yaml_file != '':
+            data = load_yaml(yaml_file)
+        else: 
+            assert data is not None
+        self.rules = rules_from_yaml_data(data['rules']) # specifically YAML here
+        rules = self.rules
+        rules.sort(cmp=compare_rules)
+        self.tokens = data['tokens']
+        self.token_match_re = self.generate_token_match_re()
+
+
     def generate_token_match_string(self):
         tokens = self.tokens.keys()
         sorted_tokens = sorted(tokens, key=len, reverse=True)
@@ -259,18 +273,6 @@ class Parser:
                 continue
         return output
     
-    def __init__(self, yaml_file='', data=None):
-        
-        if yaml_file != '':
-            data = load_yaml(yaml_file)
-        else: 
-            assert data is not None
-        self.rules = rules_from_yaml_data(data['rules']) # specifically YAML here
-        rules = self.rules
-        rules.sort(cmp=compare_rules)
-        self.tokens = data['tokens']
-        self.token_match_re = self.generate_token_match_re()
-
 if __name__ == '__main__':
     import pdb
     pdb.set_trace()
