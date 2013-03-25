@@ -75,24 +75,24 @@ def rules_from_yaml_data(rules_raw):
     for key in rules_raw:
         if debug: print "key is "+key+" = "+rules_raw[key]
         rule = {}           #1       #2        #3
-        _  ='(?:'   
-        _ +='\('
-        _ +='(?:\s?<(.+?)> )?' # group 1, prev class (in brackets indicating cluster)
-        _ +='(.+?)\s?' # group 2, prev tokens (to be split)
-        _ +='\) '
-        _ +='|' # either a cluster or a particular previous class (Could add additional support, e.g. class or paretic.
-        _ +='<(.+?)> ' # group 3, prev class (not in cluster)
-        _ +=')?'
-        _ += '(.+?)' # group 4, tokens
-        _ += '(?:' # cluster for following tokens, clusters 
-        _ += ' \('
-        _ += '\s?(.+?)' # group 5, next tokens
-        _ += '(?: <(.+?)>)?' # group 6, next class
-        _ += '\s?\)'
-        _ += '|'
-        _ += ' <(.+?)>' # group 7, follo
-        _ += ')?$'
-        m = re.match (_, key, re.S)
+        s  ='(?:'   
+        s +='\('
+        s +='(?:\s?<(.+?)> )?' # group 1, prev class (in brackets indicating cluster)
+        s +='(.+?)\s?' # group 2, prev tokens (to be split)
+        s +='\) '
+        s +='|' # either a cluster or a particular previous class (Could add additional support, e.g. class or paretic.
+        s +='<(.+?)> ' # group 3, prev class (not in cluster)
+        s +=')?'
+        s += '(.+?)' # group 4, tokens
+        s += '(?:' # cluster for following tokens, clusters 
+        s += ' \('
+        s += '\s?(.+?)' # group 5, next tokens
+        s += '(?: <(.+?)>)?' # group 6, next class
+        s += '\s?\)'
+        s += '|'
+        s += ' <(.+?)>' # group 7, follo
+        s += ')?$'
+        m = re.match (s, key, re.S)
         assert (m is not None)
         if m.group(1): rule['prev_class'] = m.group(1)
         if m.group(2): rule['prev_tokens'] = m.group(2).split(' ')
@@ -275,8 +275,7 @@ class Parser:
     
 if __name__ == '__main__':
     import pdb
-    pdb.set_trace()
-    p = Parser('urdu-meter.yaml')
+    p = Parser('settings/urdu-meter.yaml')
     import pprint
     pprint.pprint(p.rules)
     print p.tokenize(' dal-daaz')
