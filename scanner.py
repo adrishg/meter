@@ -199,6 +199,24 @@ class Scanner:
             print orig_tkn_line
         if no_match_production == False:
             print match_production_line
+   
+    def matched_meters(self, scan):
+        '''
+        Gives list of matched meters as meter id, e.g. ['G1','G2']
+        '''
+        print "** "
+        print scan.keys()
+        meters = self.meters_without_feet # acceptable meters
+        final_results = scan['results']
+        for i, r in enumerate(final_results):
+            if (not(r['scan'] in meters)): # skip if no match 
+                continue
+            meter_id = self.meters_with_feet[meter_with_feet]
+            results.append(meter_id)
+        return results # return list of meters
+
+
+    
     def print_scan(self,scan_results, details=False, no_tkns = False, no_numbers=False, no_orig_tkns=False,known_only=False,
                    no_match_production = True):
         meters = self.meters_without_feet#load_yaml('gh-meters.yaml')
@@ -210,7 +228,7 @@ class Scanner:
         for i, r in enumerate(final_results):
             if known_only and (not (r['scan'] in meters)): # allows override
                 continue
-            if no_numbers==False: print 'result #'+str(i)#+ i#" "+meter_string
+            if no_numbers==False: print 'result #'+str(i)
             if (r['scan'] in meters):
                 meter_with_feet = self.meters_without_feet[r['scan']]
                 meter_id = self.meters_with_feet[meter_with_feet]
@@ -242,6 +260,7 @@ if __name__ == '__main__':
     pdb.set_trace()
     scn = s.scan(_, known_only=True, debug=True)
 
+    print s.matched_meters(scn)
     pd = s.pd
     print s.print_scan(scn)
     print s.print_scan_result(scn['results'][0], scn['orig_parse'])
@@ -249,4 +268,4 @@ if __name__ == '__main__':
 
     #print "****"
     print s.print_scan(scn, known_only=True)
-    
+    print scn.keys()
