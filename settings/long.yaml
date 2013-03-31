@@ -42,6 +42,7 @@ rules:
   c b v<aur>: l_cbv<aur>
   c b v<aur> c: l_cbv<aur>c
   c o: l_co
+  c b o: l_cbo # problem here
   c s c: l_csc
   c s c<h+wb>: l_csc<h+wb>
   c s n c: l_csnc
