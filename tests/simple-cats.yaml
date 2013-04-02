@@ -1,0 +1,17 @@
+rules:
+  v: c
+  u: s
+  uu: v
+
+tokens:
+  ' ':
+  - wb
+  '!':
+  - wb
+  - punctuation
+  v:
+  - consonant
+  u:
+  - short_vowel
+  uu:
+  - vowel
