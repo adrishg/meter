@@ -33,13 +33,13 @@ class Scanner:
             self.meters_without_feet[new_i] = i # save a list for later
         self.ok_meters_re = '|'.join(self.meters_without_feet)
         self.meter_descriptions = load_yaml(meter_description_file)
-        self.bad_combos = []
+        bad_combos_in = []
         with open(bad_combos_file, 'rb') as csvfile:
             reader = csv.reader(csvfile, delimiter=',', quotechar="'")
             for row in reader:
                 assert len(row) == 2
-                self.bad_combos.append(row)
-
+                bad_combos_in.append(tuple(row))
+        self.bad_combos = tuple(bad_combos_in)
     def meter_ok(self, so_far):
         return re.search('(?:^|\|)'+so_far, self.ok_meters_re)
 
@@ -49,12 +49,19 @@ class Scanner:
         '''
         try:
             prev_match = prev_matches[-1]
-            for (p_m,t_m) in self.bad_combos:
-                if prev_match['rule']['production']==p_m and this_match['rule']['production']==t_m: 
-                    return True
+            return (prev_match['rule']['production'], this_match['rule']['production']) in self.bad_combos
         except IndexError:
-            pass
-        return False
+            return False
+       # return (p_m, t_m) in self.bad_combos
+#
+#        try:
+#            prev_match = prev_matches[-1]
+#            for (p_m,t_m) in self.bad_combos:
+#                if prev_match['rule']['production']==p_m and this_match['rule']['production']==t_m: 
+#                    return True
+#        except IndexError:
+#            pass
+#        return False
     
     def scan(self, s, known_only=True, debug=False, parser_debug = False):
         """
