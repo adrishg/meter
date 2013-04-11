@@ -136,7 +136,7 @@ class MeterGraph:
                           #  print 'checking bad combos at ',node_id, successor_id
                           #  print 'trying ',(a,b,'in ',self.DG[node_id][successor_id]['bad_combos']
 
-                            if [a,b] in self.DG[node_id][successor_id]['bad_combos']: # if it's bad
+                            if (a,b) in self.DG[node_id][successor_id]['bad_combos']: # if it's bad
             
                           #      print '   aborting! found ',a,b
                                 continue # abort! bad combination
@@ -227,9 +227,13 @@ class MeterGraph:
 if __name__ == '__main__':
     gp = MeterGraph()
     gp.draw_graph()
-    s=' ja;zbah-e be-i;xtiyaar-e shauq dekhaa chaahiye'
+    s=' dost ;gam-;xvaarii me;n merii sa((y farmaave;nge kyaa'#daa;g garm-e koshish-e iijaad-e daa;g-e taazah thaa'#dost ;gam-;xvaarii me;n merii sa((ii farmaave;nge kyaa'#hai ;xabar garm un ke aane kii'#;haq to yuu;n hai kih ;haq adaa nah hu))aa'# ja;zbah-e be-i;xtiyaar-e shauq dekhaa chaahiye'
+    print gp.pp.parse(s)
+    print s
     translations = gp.graph_scan(s)
     for t in translations:
         print t.scan,t.meter_type
-        print t.matches
+        for m in t.matches: print m
+
     import pprint
+    print settings.bad_types

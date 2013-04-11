@@ -82,6 +82,7 @@ tokens:
   - tkn
   v<ii+z>: 
   - tkn
+  v<aa+z>: tkn # just added, missing from here 
   v_e_fut: 
   - tkn
   v_o_fut: 
