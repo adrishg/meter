@@ -1,9 +1,9 @@
-Instructions are in Introduction.ipynb ipython notebook (just run ipython notebook in this directory).
+The Shared Horizons presentation is under the 'graph' branch.
 
-There are two python files, parser.py and scanner.py
+The original introduction and implementation are in Introduction.ipynb ipython notebook (just run ipython notebook in this directory).
 
-settings are in ./settings
+settings are in ./settings; in graph branch, some are in settings.py
 data is in ./data/verses.csv
 debugging utilities in ./utilities
 
-Last updated 2/28/2013
+Last updated 4/12/2013
