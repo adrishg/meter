@@ -98,7 +98,7 @@ def rules_from_yaml_data(rules_raw):
         if m.group(2): rule['prev_tokens'] = m.group(2).split(' ')
         if m.group(3): rule['prev_class'] = m.group(3)
         if m.group(4)==' ':
-            rule['tokens'] = ' '
+            rule['tokens'] = [' '] #ugh--missed this one.
         else:
             rule['tokens'] = m.group(4).split(' ')
         if m.group(5): rule['next_tokens'] = m.group(5).split(' ')
